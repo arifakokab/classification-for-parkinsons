@@ -1,6 +1,6 @@
 Flask
 flask-cors
-parselmouth
+praat-parselmouth
 scikit-learn
 joblib
 numpy
