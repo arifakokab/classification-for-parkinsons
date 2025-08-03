@@ -1,9 +1,6 @@
-Flask
-flask-cors
+streamlit
+streamlit-audio-recorder
 praat-parselmouth
 scikit-learn
-joblib
 numpy
-pandas
-soundfile
-gunicorn
+joblib
