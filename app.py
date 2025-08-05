@@ -100,12 +100,19 @@ def predict():
             wav_path, format="wav"
         )
 
+    try:
         feats = extract_features(wav_path)
+        print("Extracted features:", feats)
         prob  = float(rf_model.predict_proba(feats)[0, 1])
+        print("Probability:", prob)
         pred  = int(prob > THRESHOLD)
         result_txt = "Likely Parkinson's Disease" if pred else "Likely Healthy"
-        return jsonify(result=result_txt)
+        print("Result:", result_txt)
+        return jsonify(result=result_txt,
+                       probability=round(prob, 3),
+                       threshold=THRESHOLD)
     except Exception as e:
+        print("ERROR in prediction:", e)
         return jsonify(error=f"Prediction failed: {e}"), 500
     finally:
         _cleanup([orig_path, wav_path])
