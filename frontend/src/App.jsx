@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import "./index.css";
 
 const API_URL =
-  "https://parkinsonsaiscreening-carepathai-foundation.care/predict"; // Render backend
+  "https://classification-for-parkinsons.onrender.com/predict"; // Render backend
 
 export default function App() {
   // ── State ────────────────────────────────────────────────
