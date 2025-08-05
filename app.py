@@ -12,10 +12,6 @@ import joblib
 import numpy as np
 import pandas as pd
 import parselmouth
-from pydub import AudioSegment          # needs ffmpeg in the container
-from ffmpeg_static import get_ffmpeg_path
-from pydub import AudioSegment
-AudioSegment.converter = get_ffmpeg_path()   # point pydub to bundled ffmpeg
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
