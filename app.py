@@ -95,9 +95,7 @@ def predict():
         prob  = float(rf_model.predict_proba(feats)[0, 1])
         pred  = int(prob > THRESHOLD)
         result_txt = "Likely Parkinson's Disease" if pred else "Likely Healthy"
-        return jsonify(result=result_txt,
-                       probability=round(prob, 3),
-                       threshold=THRESHOLD)
+        return jsonify(result=result_txt)
     except Exception as e:
         return jsonify(error=f"Prediction failed: {e}"), 500
     finally:
