@@ -65,10 +65,8 @@ def extract_features(path_wav: str) -> pd.DataFrame:
         ]: feats[m] = np.nan
 
     # Noise ratios
-    try:    feats['NHR'] = snd.to_noise_harmonics_ratio()
-    except: feats['NHR'] = np.nan
-    try:    feats['HNR'] = snd.to_harmonics_noise_ratio()
-    except: feats['HNR'] = np.nan
+    feats['NHR'] = snd.to_noise_harmonics_ratio()  if hasattr(snd, "to_noise_harmonics_ratio")  else np.nan
+    feats['HNR'] = snd.to_harmonics_noise_ratio() if hasattr(snd, "to_harmonics_noise_ratio") else np.nan
 
     # Ensure all columns exist
     for col in FEATURE_COLS:
@@ -100,23 +98,13 @@ def predict():
         pred  = int(prob > THRESHOLD)
         result_txt = "Likely Parkinson's Disease" if pred else "Likely Healthy"
     except Exception as e:
-        _cleanup([orig_path, wav_path])
+        _cleanup([orig_path, path_wav])
         return jsonify(error=f"Feature extraction failed: {e}"), 500
 
     # 4.5  Clean temp files & respond
-    _cleanup([orig_path, wav_path])
+    _cleanup([orig_path, path_wav])
     return jsonify(result=result_txt,
                    probability=round(prob, 3))
-
-# ── 5  UTIL ─────────────────────────────────────────────────
-def _cleanup(paths):
-    """Silently remove each path once."""
-    for p in paths:
-        try:
-            if p and os.path.exists(p):
-                os.remove(p)
-        except FileNotFoundError:
-            pass
 
 # ── 6  LOCAL DEV ENTRYPOINT ─────────────────────────────────
 if __name__ == "__main__":
