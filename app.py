@@ -1,6 +1,6 @@
 # ─────────────────────────────────────────────────────────────
 #  CarePath AI Foundation – Parkinson's Voice Classifier API
-#  Supports: WebM/Opus or WAV uploads → converts to WAV →
+#  Supports: WebM/Opus or WAV uploads →
 #            extracts 16 voice features → Random-Forest at
 #            threshold 0.63 → JSON result
 # ─────────────────────────────────────────────────────────────
@@ -92,16 +92,6 @@ def predict():
     with tempfile.NamedTemporaryFile(delete=False) as tmp_in:
         upload.save(tmp_in.name)
         orig_path = tmp_in.name
-
-    # ── 4.3  Convert to WAV (PCM) if necessary
-    wav_path = f"/tmp/{uuid.uuid4()}.wav"
-    try:
-        AudioSegment.from_file(orig_path).set_frame_rate(16000).set_channels(1).export(
-            wav_path, format="wav"
-        )
-    except Exception as e:
-        _cleanup([orig_path])
-        return jsonify(error=f"Audio conversion failed: {e}"), 400
 
     # 4.4  Feature extraction & inference
     try:
