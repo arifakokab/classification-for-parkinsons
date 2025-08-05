@@ -5,10 +5,9 @@
 #            threshold 0.63 → JSON result
 # ─────────────────────────────────────────────────────────────
 
-import os, uuid, warnings, tempfile
+import os, uuid, tempfile, warnings
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from pydub import AudioSegment
 import joblib
 import numpy as np
 import pandas as pd
@@ -83,22 +82,16 @@ def health():
 @app.route("/predict", methods=["POST"])
 def predict():
     orig_path = None
-    wav_path  = None
     try:
         if "file" not in request.files or request.files["file"].filename == "":
             return jsonify(error="No file uploaded"), 400
         upload = request.files["file"]
 
-        with tempfile.NamedTemporaryFile(delete=False) as tmp_in:
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp_in:
             upload.save(tmp_in.name)
             orig_path = tmp_in.name
 
-        wav_path = f"/tmp/{uuid.uuid4()}.wav"
-        AudioSegment.from_file(orig_path).set_frame_rate(16000).set_channels(1).export(
-            wav_path, format="wav"
-        )
-
-        feats = extract_features(wav_path)
+        feats = extract_features(orig_path)
         prob  = float(rf_model.predict_proba(feats)[0, 1])
         pred  = int(prob > THRESHOLD)
         result_txt = "Likely Parkinson's Disease" if pred else "Likely Healthy"
@@ -108,7 +101,7 @@ def predict():
     except Exception as e:
         return jsonify(error=f"Prediction failed: {e}"), 500
     finally:
-        _cleanup([orig_path, wav_path])
+        _cleanup([orig_path])
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000, debug=True)
