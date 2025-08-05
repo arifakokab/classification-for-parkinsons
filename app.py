@@ -100,7 +100,6 @@ def predict():
             wav_path, format="wav"
         )
 
-    try:
         feats = extract_features(wav_path)
         print("Extracted features:", feats)
         prob  = float(rf_model.predict_proba(feats)[0, 1])
