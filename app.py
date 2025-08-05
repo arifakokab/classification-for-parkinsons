@@ -28,7 +28,7 @@ FEATURE_COLS = [
 
 # ── 2  INIT ──────────────────────────────────────────────────
 app = Flask(__name__)
-CORS(app, resources={r"/predict": {"origins": "*"}})   # loosen later if desired
+CORS(app, resources={r"/predict": {"origins": "*"}}, max_age=600)
 rf_model = joblib.load(MODEL_PATH)
 
 # ── 3  FEATURE EXTRACTION ───────────────────────────────────
