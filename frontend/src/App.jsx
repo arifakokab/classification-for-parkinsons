@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import "./styles.css";
+import "./index.css";
 
 const API_URL =
   "https://parkinsonsaiscreening-carepathai-foundation.care/predict"; // Render backend
