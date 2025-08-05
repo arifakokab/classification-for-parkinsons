@@ -26,7 +26,7 @@ FEATURE_COLS = [
     'Shimmer:APQ5', 'MDVP:APQ', 'Shimmer:DDA', 'NHR', 'HNR'
 ]
 
-# ── 2  INIT ──────────────────────────────────────────────────
+# ── 2  APP SETUP ─────────────────────────────────────────────
 app = Flask(__name__)
 CORS(app, resources={r"/predict": {"origins": "*"}}, max_age=600)
 rf_model = joblib.load(MODEL_PATH)
@@ -96,26 +96,39 @@ def predict():
     # ── 4.3  Convert to WAV (PCM) if necessary
     wav_path = f"/tmp/{uuid.uuid4()}.wav"
     try:
-        AudioSegment.from_file(orig_path).export(wav_path, format="wav")
+        AudioSegment.from_file(orig_path).set_frame_rate(16000).set_channels(1).export(
+            wav_path, format="wav"
+        )
     except Exception as e:
-        os.remove(orig_path)
+        _cleanup([orig_path])
         return jsonify(error=f"Audio conversion failed: {e}"), 400
-    finally:
-        os.remove(orig_path)
 
-    # ── 4.4  Feature extraction & classification
+    # 4.4  Feature extraction & inference
     try:
         feats = extract_features(wav_path)
         prob  = float(rf_model.predict_proba(feats)[0, 1])
         pred  = int(prob > THRESHOLD)
-        result = "Likely Parkinson's Disease" if pred else "Likely Healthy"
+        result_txt = "Likely Parkinson's Disease" if pred else "Likely Healthy"
     except Exception as e:
-        os.remove(wav_path)
+        _cleanup([orig_path, wav_path])
         return jsonify(error=f"Feature extraction failed: {e}"), 500
 
-    os.remove(wav_path)
-    return jsonify(result=result, probability=round(prob, 3), threshold=THRESHOLD)
+    # 4.5  Clean temp files & respond
+    _cleanup([orig_path, wav_path])
+    return jsonify(result=result_txt,
+                   probability=round(prob, 3))
 
-# ── 5  MAIN (Render runs with gunicorn, but handy for local dev) ─
+# ── 5  UTIL ─────────────────────────────────────────────────
+def _cleanup(paths):
+    """Silently remove each path once."""
+    for p in paths:
+        try:
+            if p and os.path.exists(p):
+                os.remove(p)
+        except FileNotFoundError:
+            pass
+
+# ── 6  LOCAL DEV ENTRYPOINT ─────────────────────────────────
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
+    # For local testing: python app.py
+    app.run(host="0.0.0.0", port=10000, debug=True)
