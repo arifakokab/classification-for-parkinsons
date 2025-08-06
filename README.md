@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project was created by **Arifa Kokab** as the **capstone project for the M.Sc.Eng in Applied Artificial Intelligence** at the **University of San Diego, Class of 2025**.
+This project was created by **Arifa Kokab** as part of the **capstone project for the M.Sc(Eng) in Applied Artificial Intelligence** at the **University of San Diego, Class of 2025**.
 
 It is a free, public, AI-powered screening tool for early detection of Parkinson’s Disease using a short voice sample (“aaah”).  
 Developed under the CarePath AI Foundation, this application is a research and education prototype—not a diagnostic device.
