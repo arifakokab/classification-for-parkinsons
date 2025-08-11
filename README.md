@@ -107,10 +107,4 @@ www.parkinsonsaiscreening-carepathai-foundation.care
 
 ---
 
-## License
-
-This project is released under the [MIT License](LICENSE).
-
----
-
 **For questions, contributions, or collaborations, open an Issue or contact Arifa Kokab (akokab@sandiego.edu)**
